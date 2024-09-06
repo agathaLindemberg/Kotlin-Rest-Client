@@ -41,7 +41,6 @@ class MainActivity : AppCompatActivity() {
         val ipService = retrofitIp.create(IpApiService::class.java)
         buscarIpInfo(ipService)
 
-
         val retrofitCep = Retrofit.Builder()
             .baseUrl("https://viacep.com.br/ws/")
             .addConverterFactory(GsonConverterFactory.create())
@@ -50,7 +49,11 @@ class MainActivity : AppCompatActivity() {
         val cepService = retrofitCep.create(ViaCEPService::class.java)
         btViaCEP.setOnClickListener {
             val cep = edCEP.text.toString()
-            buscarCepInfo(cepService, cep)
+            if (cep.isNotBlank()) {
+                buscarCepInfo(cepService, cep)
+            } else {
+                Toast.makeText(this, "Por favor, insira um CEP válido", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -83,7 +86,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<IpApiResponse>, t: Throwable) {
-                Log.e("MainActivity", "Erro: ${t.message}")
+                Log.e("MainActivity", "Erro ao obter informações do IP: ${t.message}")
                 Toast.makeText(
                     this@MainActivity,
                     "Falha ao acessar o serviço de IP",
@@ -115,7 +118,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<ViaCEPResponse>, t: Throwable) {
-                Log.e("MainActivity", "Erro: ${t.message}")
+                Log.e("MainActivity", "Erro ao buscar o CEP: ${t.message}")
                 Toast.makeText(
                     this@MainActivity,
                     "Falha na comunicação com o serviço de CEP",
